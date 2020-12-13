@@ -7,12 +7,12 @@
 ## Описание
 Входной dataframe имеет структуру Nx4:  
 ~~~
-id,feature1,feature2,time  
-row_num,[0; M-1],[0; M-1],[0., inf]
+id      | feature1 | feature2 |   time    |
+-------:|---------:|---------:|----------:|
+row_num | [0; M-1] | [0; M-1] | [0., inf] |
+-------:|---------:|---------:|----------:|
+int     |   int    |   int    |   float   |
 
-type(id): int
-type(feature1, feature2): int
-type(time): float
 ~~~
 Функция выполнена в pandas-way подходе  
 
@@ -102,10 +102,10 @@ def incidents(m, delta, df_file, output_file, console=False):
 ~~~
 python run.py -dt 0.3 -df files/big_incidents.csv -o result.csv
 ~~~
-*До преобразования к подтипам*  
+**До преобразования к подтипам** 
 ![Image alt](https://github.com/Laztrex/incidents_counter/raw/master/pics/before_subtypes.jpg)
 
-*После преобразования к подтипам*  
+**После преобразования к подтипам**  
 ![Image alt](https://github.com/Laztrex/incidents_counter/raw/master/pics/after_subtypes.jpg)
 
 
