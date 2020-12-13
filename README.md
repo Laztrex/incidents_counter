@@ -103,14 +103,11 @@ def incidents(m, delta, df_file, output_file, console=False):
 python run.py -dt 0.3 -df files/big_incidents.csv -o result.csv
 ~~~
 *До преобразования к подтипам*  
-![Image alt](https://github.com/Laztrex/WeatherParser/raw/master/pics/before_subtypes.jpg)
+![Image alt](https://github.com/Laztrex/incidents_counter/raw/master/pics/before_subtypes.jpg)
 
 *После преобразования к подтипам*  
-![Image alt](https://github.com/Laztrex/WeatherParser/raw/master/pics/after_subtypes.jpg)
+![Image alt](https://github.com/Laztrex/incidents_counter/raw/master/pics/after_subtypes.jpg)
 
-~~~
-python3 give_weather.py push -s api -c Рязань -d 2020.08.12-2020.08.15
-~~~
 
 > При огромных входных данных практикуется обработка "по частям". Например, с помощью chunk'ов
 >~~~

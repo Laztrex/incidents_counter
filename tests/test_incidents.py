@@ -1,9 +1,10 @@
 import io
 import os
 import unittest
-from incidents_analyze import incidents
 
 from unittest.mock import patch
+
+from incidents_analyze import incidents
 
 
 class GlobalEngineTest(unittest.TestCase):
