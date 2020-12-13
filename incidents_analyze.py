@@ -28,8 +28,8 @@ def incidents(m, delta, df_file, output_file, console=False):
     """
 
     df_incidents = pd.read_csv(df_file,
-                               # index_col='id',
-                               # # dtype={'feature1': 'uint8', 'feature2': 'uint8', 'time': 'float32'}
+                               index_col='id',
+                               dtype={'feature1': 'uint8', 'feature2': 'uint8', 'time': 'float32'}
                                )
 
     df_incidents.sort_values(['time'], inplace=True)
