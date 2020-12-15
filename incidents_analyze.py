@@ -2,8 +2,24 @@ import os
 import pandas as pd
 
 from datetime import datetime
-
+from decimal import Decimal
 from time_lord import time_track
+
+
+def _sub_comparator(data, dt):
+    """
+    Very heavy calculations
+    Раз векторным пока не получилось
+    :param data: данные вида (id, time)
+        :type data: Pandas.Series
+    :param dt: Delta time, ограничение по времени для инцидентов
+        :type dt: float
+    :return (Pandas.Series): Преобразованные данные вида (id, time[transform as count])
+    """
+    index_list, values_list = data.index.tolist(), data.values.tolist()
+    for idx, interested_dt in enumerate(values_list):
+        data.loc[index_list[idx]] = sum([(interested_dt - other_dt) < dt for other_dt in values_list[:idx]])
+    return data
 
 
 @time_track
@@ -14,7 +30,7 @@ def incidents(m, delta, df_file, output_file, console=False):
         при этом разница по времени не превосходит dT (Ti - Tj < delta_time);
         2) Имеют значения feature1 и feature2, совпадающие с соответствующими значениями данного инцидента.
     Решение заключается в группировке данных по признакам (feature1, feature2) в новый фрейм, и определение разницы
-    по времени между соседними инцидентами с проверкой условия (1) с помощью групповой аггрегации (Series.transform)
+    по времени между соседними инцидентами с проверкой условия (1) с помощью групповой функции (_sub_comparator)
     :param m: максимальное значение категориального признака (int): [0, m-1]
     :param delta: ограничение по времени для инцидентов
         :type delta: float
@@ -29,12 +45,14 @@ def incidents(m, delta, df_file, output_file, console=False):
 
     df_incidents = pd.read_csv(df_file,
                                index_col='id',
-                               dtype={'feature1': 'uint8', 'feature2': 'uint8', 'time': 'float32'}
+                               dtype={'feature1': 'uint8', 'feature2': 'uint8', 'time': 'float64'}
                                )
 
     df_incidents.sort_values(['time'], inplace=True)
-    diffs = df_incidents.rename(columns={'time': 'count'}).groupby(['feature1', 'feature2'])['count'].transform(
-        lambda label: (abs(label - label.shift()) < delta).cumsum()).astype(int)
+    diffs = df_incidents.\
+        rename(columns={'time': 'count'}).\
+        groupby(['feature1', 'feature2'])['count'].\
+        apply(_sub_comparator, dt=delta).astype(int)
 
     curr_date = datetime.now()
     path = os.path.normpath(os.path.dirname(__file__) + '/outputs' +
