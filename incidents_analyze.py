@@ -1,8 +1,8 @@
+# import bisect
 import os
 import pandas as pd
-
 from datetime import datetime
-from decimal import Decimal
+
 from time_lord import time_track
 
 
@@ -18,6 +18,8 @@ def _sub_comparator(data, dt):
     """
     index_list, values_list = data.index.tolist(), data.values.tolist()
     for idx, interested_dt in enumerate(values_list):
+        # data.loc[index_list[idx]] = bisect.bisect_left([(interested_dt - other_dt)
+        #                                                 for other_dt in values_list[:idx]][::-1], dt)
         data.loc[index_list[idx]] = sum([(interested_dt - other_dt) < dt for other_dt in values_list[:idx]])
     return data
 
@@ -49,9 +51,9 @@ def incidents(m, delta, df_file, output_file, console=False):
                                )
 
     df_incidents.sort_values(['time'], inplace=True)
-    diffs = df_incidents.\
-        rename(columns={'time': 'count'}).\
-        groupby(['feature1', 'feature2'])['count'].\
+    diffs = df_incidents. \
+        rename(columns={'time': 'count'}). \
+        groupby(['feature1', 'feature2'])['count']. \
         apply(_sub_comparator, dt=delta).astype(int)
 
     curr_date = datetime.now()
@@ -64,6 +66,3 @@ def incidents(m, delta, df_file, output_file, console=False):
 
     return diffs if console else f"Результат сохранён в /outputs/*current date*/{output_file}"
 
-
-if __name__ == '__main__':
-    print(incidents(2, 0.3, 'files/incidents.csv', 'out.csv'))
