@@ -1,4 +1,3 @@
-# import bisect
 import os
 import pandas as pd
 from datetime import datetime
@@ -17,10 +16,17 @@ def _sub_comparator(data, dt):
     :return (Pandas.Series): Преобразованные данные вида (id, time[transform as count])
     """
     index_list, values_list = data.index.tolist(), data.values.tolist()
-    for idx, interested_dt in enumerate(values_list):
-        # data.loc[index_list[idx]] = bisect.bisect_left([(interested_dt - other_dt)
-        #                                                 for other_dt in values_list[:idx]][::-1], dt)
-        data.loc[index_list[idx]] = sum([(interested_dt - other_dt) < dt for other_dt in values_list[:idx]])
+    copy_values = values_list[:-1].copy()
+
+    current = values_list.pop()
+    limiter = len(values_list)
+
+    while values_list:
+        idx = index_list.pop()
+        data[idx] += sum([(current - previous) < dt for previous in copy_values[:limiter]])
+        current = values_list.pop()
+        limiter -= 1
+
     return data
 
 
@@ -65,4 +71,3 @@ def incidents(m, delta, df_file, output_file, console=False):
     diffs.to_csv(os.path.join(path, output_file), index_label='id')
 
     return diffs if console else f"Результат сохранён в /outputs/*current date*/{output_file}"
-
